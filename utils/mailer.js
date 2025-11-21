@@ -1,15 +1,15 @@
 const nodemailer = require('nodemailer');
 
 const transporter = nodemailer.createTransport({
-  host: process.env.EMAIL_HOST,      // smtp-auth.mailprotect.be
-  port: 465,                          // TLS port
-  secure: true,                      // false for TLS (STARTTLS)
+  host: process.env.EMAIL_HOST,   
+  port: 587,                         
+  secure: false,                     
   auth: {
     user: process.env.EMAIL_USER,
     pass: process.env.EMAIL_PASS,
   },
   tls: {
-    rejectUnauthorized: false         // optional, helps avoid certificate issues
+    rejectUnauthorized: false      
   }
 });
 
