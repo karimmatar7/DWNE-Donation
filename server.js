@@ -47,7 +47,7 @@ app.use("/", paymentsRouter(mollie, db, broadcastPayment, sendConfirmationEmail)
 
 // ✅ Serve built React frontend (from ../dist)
 // Serve React build
-app.use(express.static(path.join(__dirname, "../dist")));
+// app.use(express.static(path.join(__dirname, "../dist")));
 
 app.get("/donatie", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "index.html"));
