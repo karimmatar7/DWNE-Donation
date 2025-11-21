@@ -1,23 +1,13 @@
-const nodemailer = require('nodemailer');
+// utils/mailer.js
+const { Resend } = require("resend");
 
-const transporter = nodemailer.createTransport({
-  host: process.env.EMAIL_HOST,   
-  port: 587,                         
-  secure: false,                     
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS,
-  },
-  tls: {
-    rejectUnauthorized: false      
-  }
-});
-
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 async function sendConfirmationEmail(to, payment) {
   if (!to) return;
 
   const subject = `Bevestiging van je donatie – €${payment.amount}`;
+
   const html = `
   <div style="font-family:Arial,sans-serif;color:#ddd;background:#0f0f0f;padding:30px;text-align:center;">
     <div style="max-width:500px;margin:auto;background:#111;border-radius:10px;padding:30px;border:1px solid rgba(157,19,19,0.4);box-shadow:0 0 20px rgba(157,19,19,0.25);">
@@ -32,16 +22,23 @@ async function sendConfirmationEmail(to, payment) {
   `;
 
   try {
-    await transporter.sendMail({
-      from: `"De weg naar evenwicht" <${process.env.EMAIL_USER}>`,
-      to,
+    // Send email via Resend
+    const { data, error } = await resend.emails.send({
+      from: process.env.EMAIL_FROM,
+      to,               // dynamic donor email
       subject,
       html,
     });
-    console.log(`📧 Confirmation email sent to ${to}`);
+
+    if (error) {
+      console.error("❌ Resend email error:", error);
+      return;
+    }
+
+    console.log(`📧 Confirmation email sent to ${to}`, data.id);
   } catch (err) {
-    console.error('❌ Email send error:', err.message);
+    console.error("❌ Email send exception:", err.message);
   }
 }
 
-module.exports = { transporter, sendConfirmationEmail };
+module.exports = { sendConfirmationEmail };
