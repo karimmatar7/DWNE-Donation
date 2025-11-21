@@ -1,0 +1,431 @@
+<!doctype html>
+<html lang="nl">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Live Betalingen — Dashboard</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+    :root {
+      --bg: #050505;
+      --card: #0f0f0f;
+      --accent: #9D1313;
+      --accent-light: #c71a1a;
+      --text: #D9D9D9;
+      --muted: #8c8c8c;
+      --success: #22c55e;
+      --warning: #f59e0b;
+      --error: #ef4444;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      margin: 0;
+      min-height: 100vh;
+      letter-spacing: 0.2px;
+    }
+
+    .wrap {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 40px 24px;
+    }
+
+    h1 {
+      font-size: 2rem;
+      margin-bottom: 16px;
+      font-weight: 700;
+      color: var(--accent);
+      text-shadow: 0 0 12px rgba(157,19,19,0.4);
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 16px;
+      padding: 22px 24px;
+      margin-bottom: 24px;
+      box-shadow: 0 0 25px rgba(0,0,0,0.6);
+      transition: transform .2s ease, box-shadow .2s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 35px rgba(0,0,0,0.8);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+    }
+
+    th, td {
+      padding: 12px 10px;
+      text-align: left;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      font-size: 0.9rem;
+    }
+
+    th {
+      color: var(--accent);
+      text-transform: uppercase;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+    }
+
+    td code { color: var(--muted); font-size: 0.8rem; }
+    tr:hover td { background: rgba(157,19,19,0.07); transition: background .2s; }
+
+    .pill {
+      display: inline-block;
+      padding: 6px 10px;
+      border-radius: 999px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      text-transform: capitalize;
+    }
+
+    .status.open { background: rgba(245,158,11,0.15); color: var(--warning); }
+    .status.paid { background: rgba(34,197,94,0.15); color: var(--success); }
+    .status.failed, .status.canceled, .status.expired { background: rgba(239,68,68,0.15); color: var(--error); }
+
+    .muted { color: var(--muted); font-size: 0.9rem; }
+
+    .info-bar {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 10px;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .info-badge {
+      background: rgba(157,19,19,0.1);
+      border: 1px solid rgba(157,19,19,0.4);
+      padding: 6px 12px;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      color: var(--text);
+    }
+
+    /* --- Custom Dropdown --- */
+    .custom-select {
+      position: relative;
+      width: 220px;
+      user-select: none;
+      font-size: 0.9rem;
+    }
+    .select-selected {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--accent);
+      border-radius: 10px;
+      padding: 10px 14px;
+      cursor: pointer;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      transition: all .2s ease;
+    }
+    .select-selected::after {
+      content: "▼";
+      font-size: 0.6rem;
+      margin-left: 10px;
+      color: var(--accent);
+      transition: transform .2s;
+    }
+    .select-selected.active::after { transform: rotate(-180deg); }
+    .select-items {
+      position: absolute;
+      background: var(--card);
+      border: 1px solid rgba(157,19,19,0.5);
+      border-radius: 10px;
+      top: 110%;
+      left: 0;
+      right: 0;
+      box-shadow: 0 8px 18px rgba(0,0,0,0.4);
+      z-index: 10;
+      animation: fadeIn .2s ease;
+    }
+    .select-items div {
+      padding: 10px 14px;
+      cursor: pointer;
+      color: var(--text);
+      transition: background .2s ease, color .2s ease;
+    }
+    .select-items div:hover {
+      background: rgba(157,19,19,0.2);
+      color: #fff;
+    }
+    .select-hide { display: none; }
+
+    .total-badge {
+      display: inline-block;
+      margin-top: 8px;
+      background: var(--accent);
+      color: #fff;
+      padding: 8px 14px;
+      border-radius: 10px;
+      font-weight: 600;
+      box-shadow: 0 0 20px rgba(157,19,19,0.4);
+      font-size: 1rem;
+    }
+
+    tr.fade-in { animation: fadeIn .5s ease; }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-6px); }
+      to { opacity: 1; transform: none; }
+    }
+
+    /* ✅ Pagination styling */
+    #pagination {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 10px;
+      margin-top: 20px;
+    }
+
+    #pagination button {
+      background: var(--accent);
+      color: white;
+      border: none;
+      padding: 8px 14px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.2s ease;
+      box-shadow: 0 0 10px rgba(157,19,19,0.2);
+    }
+
+    #pagination button:hover:not(:disabled) {
+      background: var(--accent-light);
+      box-shadow: 0 0 15px rgba(199,26,26,0.4);
+      transform: translateY(-1px);
+    }
+
+    #pagination button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+
+    #pageInfo {
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>Live Betalingen</h1>
+    <div class="card">
+      <div class="info-bar">
+        <div id="info" style="display:flex;gap:10px;flex-wrap:wrap;">
+          <div class="info-badge">Status: Verbinden...</div>
+        </div>
+
+        <!-- Custom Dropdown -->
+        <div class="custom-select" id="sortDropdown">
+          <div class="select-selected">Tijd</div>
+          <div class="select-items select-hide">
+            <div data-value="newest">Tijd</div>
+            <div data-value="highest">Bedrag</div>
+          </div>
+        </div>
+      </div>
+
+      <div id="totalContainer"></div>
+
+      <div style="overflow:auto">
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th><th>Status</th><th>Bedrag</th>
+              <th>Naam</th><th>Boodschap</th><th>Methode</th><th>Aangemaakt</th>
+            </tr>
+          </thead>
+          <tbody id="tbody"></tbody>
+        </table>
+      </div>
+
+      <!-- ✅ Pagination controls -->
+      <div id="pagination">
+        <button id="prevPage">Vorige</button>
+        <span id="pageInfo">Pagina 1</span>
+        <button id="nextPage">Volgende</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const tbody = document.getElementById('tbody');
+    const info = document.getElementById('info');
+    const totalContainer = document.getElementById('totalContainer');
+    let totalAmount = 0;
+    let payments = [];
+    let sortMode = "newest";
+    let currentPage = 1;
+    const itemsPerPage = 10;
+
+    /* ----- Dropdown Logic ----- */
+    const dropdown = document.getElementById('sortDropdown');
+    const selected = dropdown.querySelector('.select-selected');
+    const items = dropdown.querySelector('.select-items');
+
+    selected.addEventListener('click', () => {
+      selected.classList.toggle('active');
+      items.classList.toggle('select-hide');
+    });
+
+    items.querySelectorAll('div').forEach(option => {
+      option.addEventListener('click', () => {
+        sortMode = option.dataset.value;
+        selected.textContent = option.textContent;
+        selected.classList.remove('active');
+        items.classList.add('select-hide');
+        updateTable();
+      });
+    });
+
+    window.addEventListener('click', (e) => {
+      if (!dropdown.contains(e.target)) {
+        selected.classList.remove('active');
+        items.classList.add('select-hide');
+      }
+    });
+
+    /* ----- Main Functions ----- */
+    function formatCurrency(value) {
+      return new Intl.NumberFormat('nl-NL', {
+        style: 'currency',
+        currency: 'EUR',
+        minimumFractionDigits: 2
+      }).format(value);
+    }
+
+    function makeStatusPill(status){
+      const span = document.createElement('span');
+      span.className = `pill status ${status?.toLowerCase()||''}`;
+      span.textContent = status || '—';
+      return span;
+    }
+
+    function renderPayment(p){
+      const tr = document.createElement('tr');
+      const donor = p.name || p.metadata?.donorName || '(onbekend)';
+      const msg = p.message || p.metadata?.message || p.description || '(geen)';
+      const currency = p.currency || p.amount?.currency || 'EUR';
+      const value = parseFloat(p.amount?.value || p.amount || 0);
+      const amt = `${currency} ${value.toFixed(2)}`;
+      const created = p.createdAt
+        ? new Date(p.createdAt).toLocaleString('nl-NL',{hour12:false,timeStyle:'medium',dateStyle:'short'})
+        : '—';
+      tr.innerHTML = `
+        <td><code>${p.id}</code></td>
+        <td></td>
+        <td>${amt}</td>
+        <td>${donor}</td>
+        <td>${msg}</td>
+        <td>${p.method || '—'}</td>
+        <td>${created}</td>
+      `;
+      tr.children[1].appendChild(makeStatusPill(p.status));
+      tr.classList.add('fade-in');
+      return tr;
+    }
+
+    function updateTable() {
+      tbody.innerHTML = '';
+
+      const sorted = [...payments];
+      if (sortMode === 'highest') {
+        sorted.sort((a, b) => parseFloat(b.amount?.value || b.amount || 0) - parseFloat(a.amount?.value || a.amount || 0));
+      } else {
+        sorted.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+      }
+
+      const totalPages = Math.max(1, Math.ceil(sorted.length / itemsPerPage));
+      if (currentPage > totalPages) currentPage = totalPages;
+
+      const startIndex = (currentPage - 1) * itemsPerPage;
+      const pageItems = sorted.slice(startIndex, startIndex + itemsPerPage);
+
+      pageItems.forEach(p => tbody.appendChild(renderPayment(p)));
+
+      document.getElementById('pageInfo').textContent = `Pagina ${currentPage} van ${totalPages}`;
+      document.getElementById('prevPage').disabled = currentPage === 1;
+      document.getElementById('nextPage').disabled = currentPage === totalPages;
+    }
+
+    document.getElementById('prevPage').addEventListener('click', () => {
+      if (currentPage > 1) {
+        currentPage--;
+        updateTable();
+      }
+    });
+
+    document.getElementById('nextPage').addEventListener('click', () => {
+      const totalPages = Math.ceil(payments.length / itemsPerPage);
+      if (currentPage < totalPages) {
+        currentPage++;
+        updateTable();
+      }
+    });
+
+    function addPayment(p){
+      payments.unshift(p);
+      if (p.status === 'paid') {
+        totalAmount += parseFloat(p.amount?.value || p.amount || 0);
+        updateTotalDisplay();
+      }
+      updateTable();
+    }
+
+    function updateTotalDisplay() {
+      totalContainer.innerHTML = `<div class="total-badge">Totaal bedrag bereikt: ${formatCurrency(totalAmount)}</div>`;
+    }
+
+    async function init(){
+      try {
+        const r = await fetch('/payments/recent?limit=100',{cache:'no-store'});
+        const j = await r.json();
+        payments = j.items || [];
+        totalAmount = 0;
+        payments.forEach(p => { if (p.status === 'paid') totalAmount += parseFloat(p.amount?.value || p.amount || 0); });
+        updateTotalDisplay();
+        updateTable();
+        info.innerHTML = `
+          <div class="info-badge">Mode: ${j.mode}</div>
+          <div class="info-badge">Totaal betalingen: ${j.count}</div>
+          <div class="info-badge">Laatste update: ${new Date().toLocaleTimeString('nl-NL',{hour12:false})}</div>`;
+      } catch(e){
+        info.innerHTML = `<div class="info-badge">❌ Fout: ${e.message}</div>`;
+      }
+    }
+
+    init();
+
+    const evt = new EventSource('/payments/stream');
+    evt.onmessage = e => {
+      try {
+        const payment = JSON.parse(e.data);
+        addPayment(payment);
+        info.innerHTML = `
+          <div class="info-badge">🟢 Nieuwe betaling ontvangen</div>
+          <div class="info-badge">${new Date().toLocaleTimeString('nl-NL',{hour12:false})}</div>`;
+      } catch(err){
+        console.error('SSE parse error', err);
+      }
+    };
+    evt.onopen = ()=> info.innerHTML = `<div class="info-badge">🟢 Verbonden — Live updates actief</div>`;
+    evt.onerror = ()=> info.innerHTML = `<div class="info-badge">🔴 Verbinding verbroken...</div>`;
+  </script>
+</body>
+</html>
