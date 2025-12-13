@@ -157,7 +157,7 @@ sendBtn.disabled=true; statusText.textContent='Versturen...'; statusText.classNa
 try{
 const res=await fetch('/submit-email',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id:'${id}',email})});
 const data=await res.json();
-if(data.success){statusText.textContent='✅ E-mail verzonden!';statusText.className='success';emailInput.value='';sendBtn.disabled=false;}
+if(data.success){statusText.textContent='✅ E-mail verzonden! Check uw spam';statusText.className='success';emailInput.value='';sendBtn.disabled=false;}
 else throw new Error(data.error||'Onbekende fout');
 }catch(err){statusText.textContent='❌ Er ging iets mis: '+err.message;statusText.className='error';sendBtn.disabled=false;}
 });
