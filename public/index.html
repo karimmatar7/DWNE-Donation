@@ -4,218 +4,275 @@
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
   <title>Steun ons</title>
+
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+
     :root {
-      --bg: #050505;
-      --card: #0d0d0d;
-      --accent: #9D1313;
-      --accent-hover: #b81616;
-      --text: #D9D9D9;
-      --muted: #a3a3a3;
-      --border: rgba(217,217,217,0.08);
+      --bg:#050505;
+      --card:#0d0d0d;
+      --accent:#9D1313;
+      --accent-hover:#b81616;
+      --text:#D9D9D9;
+      --muted:#a3a3a3;
+      --border:rgba(217,217,217,0.08);
     }
-    * { box-sizing: border-box; }
+
+    * { box-sizing:border-box; }
 
     body {
-      font-family: 'Inter', system-ui, sans-serif;
-      margin: 0;
-      background: radial-gradient(circle at 25% 25%, #0a0a0a, #050505);
-      color: var(--text);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      min-height: 100vh;
-      padding: 24px;
+      font-family:'Inter',system-ui,sans-serif;
+      margin:0;
+      background:radial-gradient(circle at 25% 25%,#0a0a0a,#050505);
+      color:var(--text);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      min-height:100vh;
+      padding:24px;
     }
 
     .card {
-      background: var(--card);
-      padding: 40px;
-      border-radius: 18px;
-      border: 1px solid var(--border);
-      box-shadow: 0 6px 30px rgba(0,0,0,0.5);
-      width: 100%;
-      max-width: 420px;
-      animation: fadeIn 0.8s ease forwards;
+      background:var(--card);
+      padding:40px;
+      border-radius:18px;
+      border:1px solid var(--border);
+      box-shadow:0 6px 30px rgba(0,0,0,0.5);
+      width:100%;
+      max-width:420px;
+      animation:fadeIn .8s ease forwards;
     }
 
     h1 {
-      margin: 0 0 28px;
-      font-size: 2rem;
-      font-weight: 700;
-      text-align: center;
-      color: var(--accent);
-      text-shadow: 0 0 15px rgba(157,19,19,0.3);
+      margin:0 0 24px;
+      font-size:2rem;
+      font-weight:700;
+      text-align:center;
+      color:var(--accent);
+      text-shadow:0 0 15px rgba(157,19,19,0.3);
     }
 
-    form {
-      display: grid;
-      gap: 14px;
-    }
+    form { display:grid; gap:18px; }
 
     label {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-      font-weight: 600;
-      font-size: 0.9rem;
+      display:flex;
+      flex-direction:column;
+      gap:6px;
+      font-weight:600;
+      font-size:.9rem;
     }
 
-    input {
-      background: rgba(255,255,255,0.04);
-      border: 1px solid rgba(255,255,255,0.08);
-      color: var(--text);
-      border-radius: 10px;
-      padding: 10px 12px;
-      font-size: 1rem;
-      outline: none;
-      transition: border .2s, background .2s;
+    input[type="text"] {
+      background:rgba(255,255,255,0.04);
+      border:1px solid rgba(255,255,255,0.08);
+      color:var(--text);
+      border-radius:10px;
+      padding:10px 12px;
+      font-size:1rem;
+      outline:none;
     }
 
-    input:focus {
-      border-color: var(--accent);
-      background: rgba(157,19,19,0.15);
+    input[type="text"]:focus {
+      border-color:var(--accent);
+      background:rgba(157,19,19,0.15);
     }
 
-    button {
-      margin-top: 8px;
-      background: linear-gradient(135deg, var(--accent), var(--accent-hover));
-      color: #fff;
-      border: none;
-      padding: 12px 18px;
-      border-radius: 10px;
-      cursor: pointer;
-      font-size: 1rem;
-      font-weight: 600;
-      transition: all .2s ease;
-      box-shadow: 0 0 18px rgba(157,19,19,0.35);
+    /* Amount buttons */
+    .amounts {
+      display:grid;
+      grid-template-columns:repeat(4,1fr);
+      gap:10px;
+      margin-top:6px;
     }
 
-    button:hover {
-      transform: scale(1.04);
-      box-shadow: 0 0 25px rgba(157,19,19,0.55);
-      background: linear-gradient(135deg, var(--accent-hover), #c81e1e);
+    .text-terms {
+      display: block;
+    }
+
+    .amount-btn {
+      padding:12px 0;
+      border-radius:10px;
+      border:1px solid rgba(255,255,255,0.08);
+      background:rgba(255,255,255,0.04);
+      color:var(--text);
+      font-weight:600;
+      cursor:pointer;
+      transition:.2s;
+    }
+
+    .amount-btn:hover {
+      background:rgba(157,19,19,0.25);
+      border-color:var(--accent);
+    }
+
+    .amount-btn.active {
+      background:linear-gradient(135deg,var(--accent),var(--accent-hover));
+      border-color:var(--accent);
+      box-shadow:0 0 18px rgba(157,19,19,.45);
+    }
+
+    /* Terms */
+    .terms {
+      display:flex;
+      align-items:flex-start;
+      gap:10px;
+      font-size:.85rem;
+      color:var(--muted);
+      line-height:1.4;
+    }
+
+    .terms input {
+      margin-top:3px;
+      accent-color: var(--accent);
+      cursor:pointer;
+    }
+
+    .terms a {
+      color:var(--accent-hover);
+      text-decoration:underline;
+      font-weight:600;
+    }
+
+
+    /* Submit button */
+    button.submit {
+      margin-top:6px;
+      background:linear-gradient(135deg,var(--accent),var(--accent-hover));
+      color:#fff;
+      border:none;
+      padding:14px 18px;
+      border-radius:10px;
+      cursor:pointer;
+      font-size:1rem;
+      font-weight:700;
+      box-shadow:0 0 18px rgba(157,19,19,0.35);
+      transition:.2s;
+    }
+
+    button.submit:disabled {
+      opacity:.4;
+      cursor:not-allowed;
+      box-shadow:none;
+      transform:none;
     }
 
     p {
-      margin-top: 20px;
-      text-align: center;
-      font-size: 0.9rem;
-      color: var(--muted);
+      margin-top:22px;
+      text-align:center;
+      font-size:.9rem;
+      color:var(--muted);
     }
 
     a {
-      color: var(--accent-hover);
-      text-decoration: none;
-      font-weight: 600;
+      color:var(--accent-hover);
+      text-decoration:none;
+      font-weight:600;
     }
 
-    a:hover { text-decoration: underline; }
-
-    #debug {
-      color: #f87171;
-      margin-top: 16px;
-      font-size: 0.85rem;
-      white-space: pre-wrap;
-      background: rgba(255,255,255,0.05);
-      border-radius: 8px;
-      padding: 8px 10px;
-    }
+    a:hover { text-decoration:underline; }
 
     @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(15px); }
-      to { opacity: 1; transform: translateY(0); }
+      from { opacity:0; transform:translateY(15px); }
+      to { opacity:1; transform:translateY(0); }
     }
   </style>
 </head>
+
 <body>
-  <div class="card">
-    <h1>❤️ Steun ons — Doneer</h1>
+<div class="card">
+  <h1>❤️ Steun ons - De Weg Naar Evenwicht</h1>
 
-    <form id="donateForm">
-      <label>Naam
-        <input name="name" type="text" placeholder="Jouw naam" required />
+  <form id="donateForm">
+
+    <label>Naam
+      <input name="name" type="text" placeholder="Jouw naam" required />
+    </label>
+
+    <label>Bedrag
+      <div class="amounts">
+        <button type="button" class="amount-btn active" data-amount="5">€5</button>
+        <button type="button" class="amount-btn" data-amount="1">€1</button>
+        <button type="button" class="amount-btn" data-amount="2">€2</button>
+        <button type="button" class="amount-btn" data-amount="10">€10</button>
+      </div>
+    </label>
+
+    <label>Boodschap (optioneel)
+      <input name="message" type="text" placeholder="Succes met jullie werk!" />
+    </label>
+
+    <!-- TERMS -->
+    <div class="terms">
+      <input type="checkbox" id="termsCheck" />
+      <label class="text-terms" for="termsCheck">
+        Ik heb de
+        <a href="/Donatievoorwaarden – Installatie Warmste Week - Evenwicht.pdf" target="_blank" rel="noopener">
+          algemene voorwaarden
+        </a>
+        gelezen en ga hiermee akkoord.
       </label>
+    </div>
 
-      <label>Bedrag (€)
-        <input name="amount" type="number" step="0.01" min="1.00" value="5.00" required />
-      </label>
+    <button class="submit" type="submit" id="donateBtn" disabled>
+      💸 Doneer
+    </button>
+  </form>
 
-      <label>Boodschap (optioneel)
-        <input name="message" type="text" placeholder="Voor project X" />
-      </label>
+  <p>
+    Live overzicht:
+    <a href="/live.html" target="_blank">Bekijk betalingen →</a>
+  </p>
+</div>
 
-      <button type="submit">💸 Doneer</button>
-    </form>
+<script>
+  let selectedAmount = 5;
 
-    <p>
-      Live overzicht: 
-      <a href="/live.html" target="_blank">Bekijk betalingen →</a>
-    </p>
-
-  </div>
-
-  <script>
-    const debug = document.getElementById('debug');
-    document.getElementById('donateForm').addEventListener('submit', async (e)=>{
-      e.preventDefault();
-      const form = e.target;
-      const payload = {
-        name: form.name.value,
-        amount: Number(form.amount.value).toFixed(2),
-        message: form.message.value || 'Donatie'
-      };
-      try {
-        const r = await fetch('/create-payment', {
-          method:'POST',
-          headers:{'Content-Type':'application/json'},
-          body: JSON.stringify(payload),
-          cache: 'no-store'
-        });
-        const t = await r.text();
-        let j; try{ j = JSON.parse(t); }catch(_){}
-        if (r.ok && j?.checkoutUrl) {
-          window.location.href = j.checkoutUrl;
-        } else {
-          const msg = j?.error || t || 'Onbekende fout';
-          debug.textContent = 'Server error: ' + msg;
-          alert('Fout bij aanmaken betaling: ' + msg);
-        }
-      } catch(err){
-        debug.textContent = 'Fetch error: ' + err.message;
-        alert('Er ging iets mis: ' + err.message);
-      }
+  document.querySelectorAll('.amount-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.amount-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      selectedAmount = Number(btn.dataset.amount);
     });
+  });
 
+  const termsCheck = document.getElementById('termsCheck');
+  const donateBtn = document.getElementById('donateBtn');
 
- const params = new URLSearchParams(window.location.search);
-const error = params.get('error');
+  termsCheck.addEventListener('change', () => {
+    donateBtn.disabled = !termsCheck.checked;
+  });
 
-if (error) {
-  const messages = {
-    canceled: '❗ Je betaling is geannuleerd. Probeer het opnieuw.',
-    failed: '❌ Er is iets misgegaan met je betaling. Probeer het opnieuw.'
-  };
+  document.getElementById('donateForm').addEventListener('submit', async e => {
+    e.preventDefault();
+    if (!termsCheck.checked) return;
 
-  const message = messages[error] || '❌ Er is iets misgegaan met je betaling. Probeer het opnieuw.';
+    const form = e.target;
 
-  const div = document.createElement('div');
-  div.style.backgroundColor = '#b91c1c';
-  div.style.color = 'white';
-  div.style.padding = '12px';
-  div.style.textAlign = 'center';
-  div.style.borderRadius = '8px';
-  div.style.margin = '0 0 24px 0';
-  div.style.fontWeight = '600';
-  div.style.fontFamily = 'Inter, system-ui, sans-serif';
-  div.style.boxShadow = '0 4px 12px rgba(0,0,0,0.25)';
-  div.textContent = message;
+    const payload = {
+      name: form.name.value.trim(),
+      amount: selectedAmount,
+      message: form.message.value || 'Donatie'
+    };
 
-  // Insert at the top of your card
-  const card = document.querySelector('.card');
-  card.prepend(div);
-}
-  </script>
+    try {
+      const res = await fetch('/create-payment', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+
+      const data = await res.json();
+
+      if (res.ok && data.checkoutUrl) {
+        window.location.href = data.checkoutUrl;
+      } else {
+        alert(data.error || 'Kon betaling niet starten');
+      }
+    } catch (err) {
+      alert('Netwerkfout: ' + err.message);
+    }
+  });
+</script>
+
 </body>
 </html>
