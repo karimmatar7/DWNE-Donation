@@ -231,26 +231,19 @@
           <div class="info-badge">Status: Verbinden...</div>
         </div>
 
-        <!-- Custom Dropdown -->
-        <div class="custom-select" id="sortDropdown">
-          <div class="select-selected">Tijd</div>
-          <div class="select-items select-hide">
-            <div data-value="newest">Tijd</div>
-            <div data-value="highest">Bedrag</div>
-          </div>
-        </div>
       </div>
 
       <div id="totalContainer"></div>
 
       <div style="overflow:auto">
         <table>
-          <thead>
-            <tr>
-              <th>ID</th><th>Status</th><th>Bedrag</th>
-              <th>Naam</th><th>Boodschap</th><th>Methode</th><th>Aangemaakt</th>
-            </tr>
-          </thead>
+<thead>
+  <tr>
+   <th>Status</th><th>Bedrag</th>
+    <th>Naam</th><th>Boodschap</th><th>Methode</th><th>Aangemaakt</th>
+  </tr>
+</thead>
+
           <tbody id="tbody"></tbody>
         </table>
       </div>
@@ -274,33 +267,6 @@
     let currentPage = 1;
     const itemsPerPage = 10;
 
-    /* ----- Dropdown Logic ----- */
-    const dropdown = document.getElementById('sortDropdown');
-    const selected = dropdown.querySelector('.select-selected');
-    const items = dropdown.querySelector('.select-items');
-
-    selected.addEventListener('click', () => {
-      selected.classList.toggle('active');
-      items.classList.toggle('select-hide');
-    });
-
-    items.querySelectorAll('div').forEach(option => {
-      option.addEventListener('click', () => {
-        sortMode = option.dataset.value;
-        selected.textContent = option.textContent;
-        selected.classList.remove('active');
-        items.classList.add('select-hide');
-        updateTable();
-      });
-    });
-
-    window.addEventListener('click', (e) => {
-      if (!dropdown.contains(e.target)) {
-        selected.classList.remove('active');
-        items.classList.add('select-hide');
-      }
-    });
-
     /* ----- Main Functions ----- */
     function formatCurrency(value) {
       return new Intl.NumberFormat('nl-NL', {
@@ -310,36 +276,56 @@
       }).format(value);
     }
 
-    function makeStatusPill(status){
-      const span = document.createElement('span');
-      span.className = `pill status ${status?.toLowerCase()||''}`;
-      span.textContent = status || '—';
-      return span;
-    }
+    const STATUS_LABELS = {
+  paid: 'betaald',
+  open: 'open',
+  failed: 'mislukt',
+  canceled: 'geannuleerd',
+  expired: 'verlopen'
+};
 
-    function renderPayment(p){
-      const tr = document.createElement('tr');
-      const donor = p.name || p.metadata?.donorName || '(onbekend)';
-      const msg = p.message || p.metadata?.message || p.description || '(geen)';
-      const currency = p.currency || p.amount?.currency || 'EUR';
-      const value = parseFloat(p.amount?.value || p.amount || 0);
-      const amt = `${currency} ${value.toFixed(2)}`;
-      const created = p.createdAt
-        ? new Date(p.createdAt).toLocaleString('nl-NL',{hour12:false,timeStyle:'medium',dateStyle:'short'})
-        : '—';
-      tr.innerHTML = `
-        <td><code>${p.id}</code></td>
-        <td></td>
-        <td>${amt}</td>
-        <td>${donor}</td>
-        <td>${msg}</td>
-        <td>${p.method || '—'}</td>
-        <td>${created}</td>
-      `;
-      tr.children[1].appendChild(makeStatusPill(p.status));
-      tr.classList.add('fade-in');
-      return tr;
-    }
+
+function makeStatusPill(status){
+  const span = document.createElement('span');
+  const key = status?.toLowerCase() || '';
+  span.className = `pill status ${key}`;
+  span.textContent = STATUS_LABELS[key] || status || '—';
+  return span;
+}
+
+
+function renderPayment(p){
+  const tr = document.createElement('tr');
+
+  const donor = p.name || p.metadata?.donorName || '(onbekend)';
+  const msg = p.message || p.metadata?.message || p.description || '(geen)';
+  const currency = p.currency || p.amount?.currency || 'EUR';
+  const value = parseFloat(p.amount?.value || p.amount || 0);
+  const amt = `${currency} ${value.toFixed(2)}`;
+  const created = p.createdAt
+    ? new Date(p.createdAt).toLocaleString('nl-NL',{
+        hour12:false,
+        timeStyle:'medium',
+        dateStyle:'short'
+      })
+    : '—';
+
+  tr.innerHTML = `
+    <td></td>
+    <td>${amt}</td>
+    <td>${donor}</td>
+    <td>${msg}</td>
+    <td>${p.method || '—'}</td>
+    <td>${created}</td>
+  `;
+
+  // Status pill goes into first column
+  tr.children[0].appendChild(makeStatusPill(p.status));
+
+  tr.classList.add('fade-in');
+  return tr;
+}
+
 
     function updateTable() {
       tbody.innerHTML = '';
@@ -383,14 +369,11 @@
       payments.unshift(p);
       if (p.status === 'paid') {
         totalAmount += parseFloat(p.amount?.value || p.amount || 0);
-        updateTotalDisplay();
       }
       updateTable();
     }
 
-    function updateTotalDisplay() {
-      totalContainer.innerHTML = `<div class="total-badge">Totaal bedrag bereikt: ${formatCurrency(totalAmount)}</div>`;
-    }
+
 
     async function init(){
       try {
@@ -399,7 +382,6 @@
         payments = j.items || [];
         totalAmount = 0;
         payments.forEach(p => { if (p.status === 'paid') totalAmount += parseFloat(p.amount?.value || p.amount || 0); });
-        updateTotalDisplay();
         updateTable();
         info.innerHTML = `
           <div class="info-badge">Mode: ${j.mode}</div>
